@@ -19,20 +19,20 @@ Import-PowerShellDataFile Todo.psd1 | Write-Output
 ## Basic Usage
 
 ```powershell
-New-TodoListh
+New-TodoList
 New-Task "Update VM"
 New-Task -Description "Schedule meeting with PO" -Priority High
 Get-TodoList
 New-Task -Description "Review PR #186" -Project "Backend"
 Get-TodoList | where Priority -eq 'High' | fl
 Update-Task -Id 2 -Status Done
-Remove-Task -Id 2
+Remove-Task 2
 ```
 
 ## Remarks
 
 The default view is formatted by `TaskTable.ps1xml` which only displays `Id`, `Project`, `Status`, `Priority` and `Description`.
-Pipe the output from `Get-TodoList` to `Formaat-List` (alias: `fl`) to print all other properties as well.
+Pipe the output from `Get-TodoList` to `Format-List` (alias: `fl`) to see all other properties as well.
 
 ## Command Reference
 
@@ -41,6 +41,6 @@ Use the comment-based help (`Get-Help <cmd> -Examples`) to review more examples.
 ```powershell
 # list all available commands
 Get-Command -Module Todo
-# list all exported aliases
+# list all exported module aliases
 Get-Alias | where Source -eq Todo
 ```
