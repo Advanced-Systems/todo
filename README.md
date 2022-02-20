@@ -3,7 +3,12 @@
 ## Description
 
 `Todo` is an open-source PowerShell module to manage your TODO list from the terminal. All tasks are locally stored
-in a SQLite database located in a app data sub-directory.
+in a SQLite database located in a app data sub-directory. This module can be installed from [PowerShell Gallery](https://www.powershellgallery.com/)
+with
+
+```powershell
+Install-Module -Name Todo
+```
 
 ## Required Modules
 
