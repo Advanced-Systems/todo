@@ -36,7 +36,7 @@ Pipe the output from `Get-TodoList` to `Format-List` (alias: `fl`) to see all ot
 
 ## Command Reference
 
-Use the comment-based help (`Get-Help <cmd> -Examples`) to review more examples.
+Use the comment-based help (`Get-Help <cmd> -Examples`) to see more examples.
 
 ```powershell
 # list all available commands
