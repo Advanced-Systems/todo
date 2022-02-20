@@ -23,6 +23,7 @@ function Remove-TodoList {
         PS C:\> Remove-TodoList -User "Mazawa Shinonome"
         Remove the TODO list for a specific user.
     #>
+    [Alias("rtodo")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter()]

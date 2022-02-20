@@ -23,6 +23,8 @@ function New-TodoList {
         PS C:\> New-TodoList -User "Mazawa Shinonome"
         Create a new TODO list for a specific user.
     #>
+    [Alias("ntodo")]
+    [CmdletBinding()]
     param(
         [Parameter()]
         [string] $User = $env:UserName

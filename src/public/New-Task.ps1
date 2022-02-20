@@ -38,6 +38,7 @@ function New-Task {
         PS C:\> New-Task -Description "Review PR #186" -Project "Backend" -Priority Medium
         NOTE: You can always update specific Properties later with the Update-Task Cmdlet.
     #>
+    [Alias("ntask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Position = 0, Mandatory = $true)]

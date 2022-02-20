@@ -37,7 +37,7 @@ function Update-Task {
         None.
 
         .EXAMPLE
-        PS C:\> Update-Task -Id 1 -Status Done
+        PS C:\> Update-Task 1 -Status Done
         Mark the first task as done.
 
         .EXAMPLE
@@ -48,6 +48,7 @@ function Update-Task {
         PS C:\> Update-Task -Query "UPDATE TodoList SET Priority = 'High',Status='InProgress' WHERE Id=42"
         Update the priority of task 42 to high and change its current status to in-progress by using a SQL query.
     #>
+    [Alias("utask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Position = 0, ParameterSetName = "Query")]
