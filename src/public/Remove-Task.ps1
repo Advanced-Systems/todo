@@ -22,8 +22,8 @@ function Remove-Task {
         None.
 
         .EXAMPLE
-        PS C:\> Remove-Task -Id 23
-        Remove a task where Id equals the value of 23.
+        PS C:\> Remove-Task 23
+        Remove a task whose Id equals 23.
 
         .EXAMPLE
         PS C:\> Remove-Task -Query "DELETE FROM TodoList WHERE Status = 'Done'"
@@ -35,6 +35,7 @@ function Remove-Task {
         NOTE: String values should be enclosed by single quotes.
         WARNING: This operation is irreversible.
     #>
+    [Alias("rtask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
         [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Id")]

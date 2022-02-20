@@ -1,10 +1,10 @@
-function Get-Task {
+function Get-TodoList {
     <#
         .SYNOPSIS
         List all tasks from a TODO list.
 
         .DESCRIPTION
-        List all tasks from a TODO list where status is not set to 'Done'. Supply a filter to define custom rules.
+        List all tasks from a TODO list where status is not set to 'Done'. Supply a filter to define custom rules or pipe the output to Where-Object.
 
         .PARAMETER All
         List all tasks regardless of their current status.
@@ -16,24 +16,26 @@ function Get-Task {
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
 
         .INPUTS
-        None. You cannot pipe objects to Get-Task.
+        None. You cannot pipe objects to Get-TodoList.
 
         .OUTPUTS
         A list of Task objects.
 
         .EXAMPLE
-        PS C:\> Get-Task
+        PS C:\> Get-TodoList
         List all tasks from the active user TODO list where status is not set to 'Done'. Use the -All switch to list all tasks regardless of their current status.
 
         .EXAMPLE
-        PS C:\> PS C:\> Get-Task | where Priority -eq 'High'
+        PS C:\> PS C:\> Get-TodoList -All | where Priority -eq 'High'
         List all tasks from the activce user TODO list with a high priority.
 
         .EXAMPLE
-        PS C:\> Get-Task -Query "SELECT * FROM TodoList WHERE Priority = 'High'" -User Work
+        PS C:\> Get-TodoList -Query "SELECT * FROM TodoList WHERE Priority = 'High'" -User Work
         List all tasks from the Work TODO list with a high priority.
         NOTE: While the SQL query syntax is case-insensitive, search values should be enclosed in single quotes and correctly capitalized. It is highly recommended to use PowerShell's native query methods from the second example to filter results.
     #>
+    [Alias("gtodo")]
+    [CmdletBinding()]
     param(
         [Parameter(ParameterSetName = "All")]
         [switch] $All,
