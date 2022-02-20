@@ -21,7 +21,9 @@ function Publish-Todo {
     begin {
         $Steps = 5
         $Name = "Todo"
-        $ManifestPath = "${PSScriptRoot}\src\${Name}.psd1"
+        $ModulePath = $env:PSModulePath -Split ";" | Select-Object -First 1
+        $ModuleRootDirectory = Join-Path -Path $PSScriptRoot -ChildPath "src"
+        $ManifestPath = Join-Path -Path $ModuleRootDirectory -ChildPath "${Name}.psd1"
         $Manifest = Import-PowerShellDataFile -Path $ManifestPath
         $Version = $Manifest.ModuleVersion
     }
@@ -37,6 +39,11 @@ function Publish-Todo {
 
         Write-Host "(4/${Steps}) Import main module" -ForegroundColor Green
         Import-Module $ManifestPath -Force
+
+        Write-Host "(5/${Steps}) Copy items to module directory" -ForegroundColor Green
+        $Destination = New-Item -ItemType Directory -Path $ModulePath -Name $Name -Force
+        Remove-Item -Recurse -Force $Destination
+        Copy-Item $ModuleRootDirectory -Destination $Destination.FullName -Recurse -Force
 
         if ($PSCmdlet.ShouldProcess($ManifestPath, "Publish ${Name} module version ${Version} to PSGallery")) {
             Publish-Module -Name $Name -NuGetApiKey $ApiKey -Verbose
