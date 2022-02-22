@@ -1,6 +1,10 @@
-# Todo
+<p align="center">
+  <a title="Project Logo">
+    <img height="150" style="margin-top:15px" src="https://raw.githubusercontent.com/Advanced-Systems/vector-assets/master/advanced-systems-logo-annotated.svg">
+  </a>
+</p>
 
-## Description
+<h1 align="center">Advanced Systems Todo List</h1>
 
 `Todo` is an open-source PowerShell module to manage your TODO list from the terminal. All tasks are locally stored
 in a SQLite database located in a app data sub-directory. This module can be installed from [PowerShell Gallery](https://www.powershellgallery.com/)
@@ -12,7 +16,7 @@ Install-Module -Name Todo
 
 ## Required Modules
 
-- [`SQListe`](https://www.nuget.org/packages/System.Data.SQLite/)
+- [`SQListe`](https://www.powershellgallery.com/packages/SQLite/2.0)
 
 Review the module manifest:
 
