@@ -6,9 +6,6 @@ function Remove-Task {
         .DESCRIPTION
         Remove a task from a TODO list by Id or Query.
 
-        .PARAMETER Query
-        Use a SQL query to perform this operation.
-
         .PARAMETER Id
         Defines the ID of a task that is to be removed.
 
@@ -16,7 +13,7 @@ function Remove-Task {
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
 
         .INPUTS
-        None. You cannot pipe objects to Update-Task.
+        You can pipe Task objects to Remove-Task.
 
         .OUTPUTS
         None.
@@ -26,7 +23,7 @@ function Remove-Task {
         Remove a task whose Id equals 23.
 
         .EXAMPLE
-        PS C:\> Remove-Task -Query "DELETE FROM TodoList WHERE Status = 'Done'"
+        PS C:\> Get-TodoList -All | where Status -eq 'Done' | Remove-Task -WhatIf
         Remove all tasks from the current user's TODO list that were marked as done.
 
         .EXAMPLE
@@ -38,11 +35,8 @@ function Remove-Task {
     [Alias("rtask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Id")]
-        [int] $Id,
-
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName = "Query")]
-        [string] $Query,
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [int[]] $Id,
 
         [Parameter()]
         [string] $User = $env:UserName
@@ -56,11 +50,13 @@ function Remove-Task {
         $Connection.Open()
     }
     process {
-        $Sql = $Connection.CreateCommand()
-        $Sql.CommandText = if ($Query) { $Query } else { "DELETE FROM TodoList WHERE Id = ${Id}" }
+        foreach ($i in $Id) {
+            $Sql = $Connection.CreateCommand()
+            $Sql.CommandText = "DELETE FROM TodoList WHERE Id = ${i}"
 
-        if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-            $Sql.ExecuteNonQuery() | Out-Null
+            if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
+                $Sql.ExecuteNonQuery() | Out-Null
+            }
         }
     }
     end {
