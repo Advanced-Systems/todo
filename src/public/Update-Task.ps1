@@ -6,9 +6,6 @@ function Update-Task {
         .DESCRIPTION
         Adds a new task to a TODO list by Id or Query. It is possible to manage multiple TODO lists in separate databases at once.
 
-        .PARAMETER Query
-        Use a SQL query to perform this operation.
-
         .PARAMETER Id
         Defines the ID of a task that is to be updated.
 
@@ -31,7 +28,7 @@ function Update-Task {
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
 
         .INPUTS
-        None. You cannot pipe objects to Update-Task.
+        You can pipe Task objects to Update-Task.
 
         .OUTPUTS
         None.
@@ -45,33 +42,30 @@ function Update-Task {
         Update the priority of task 42 to high and change its current status to in-progress.
 
         .EXAMPLE
-        PS C:\> Update-Task -Query "UPDATE TodoList SET Priority = 'High',Status='InProgress' WHERE Id=42"
-        Update the priority of task 42 to high and change its current status to in-progress by using a SQL query.
+        PS C:\> Get-TodoList | where { $(Get-Date) -gt $_.DueDate -and $_.Status -ne 'Done' } | Update-Task -Status Discarded
+        Search all overdue task records that were never completed and update their status to discarded
     #>
     [Alias("utask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Position = 0, ParameterSetName = "Query")]
-        [string] $Query,
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [int[]] $Id,
 
-        [Parameter(Position = 0, Mandatory = $true, ParameterSetName="Property")]
-        [int] $Id,
-
-        [Parameter(ParameterSetName = "Property")]
+        [Parameter()]
         [string] $Project,
 
-        [Parameter(ParameterSetName = "Property")]
+        [Parameter()]
         [string] $Description,
 
-        [Parameter(ParameterSetName = "Property")]
+        [Parameter()]
         [ValidateSet("High", "Medium", "Low")]
         [string] $Priority,
 
-        [Parameter(ParameterSetName = "Property")]
+        [Parameter()]
         [ValidateSet("TODO", "Idea", "Planning", "InProgress", "Testing", "InReview", "Done", "Discarded", "Blocked")]
         [string] $Status,
 
-        [Parameter(ParameterSetName = "Property")]
+        [Parameter()]
         [DateTime] $DueDate,
 
         [Parameter()]
@@ -86,12 +80,8 @@ function Update-Task {
         $Connection.Open()
     }
     process {
-        $Sql = $Connection.CreateCommand()
-        
-        if ($Query) { 
-            $Sql.CommandText = $Query 
-        } 
-        else {
+        foreach ($i in $Id) {
+            $Sql = $Connection.CreateCommand()
             $QueryBuilder = New-Object System.Collections.Generic.List[string]
             $QueryBuilder.Add("UPDATE TodoList SET ")
 
@@ -111,12 +101,12 @@ function Update-Task {
                 $QueryBuilder.Add("DueDate = '$($DueDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff"))'")
             }
 
-            $QueryBuilder.Add(" WHERE Id=${Id}")
+            $QueryBuilder.Add(" WHERE Id=${i}")
             $Sql.CommandText = $QueryBuilder -Join ''
-        }
 
-        if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-            $Sql.ExecuteNonQuery() | Out-Null
+            if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
+                $Sql.ExecuteNonQuery() | Out-Null
+            }
         }
     }
     end {

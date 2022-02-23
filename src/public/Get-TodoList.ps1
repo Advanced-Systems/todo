@@ -9,8 +9,8 @@ function Get-TodoList {
         .PARAMETER All
         List all tasks regardless of their current status.
 
-        .PARAMETER Query
-        Use a SQL query to perform this operation.
+        .PARAMETER Filter
+        Use the filter in combination with a comparison operator to apply simple filters on this list.
 
         .PARAMETER User
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
@@ -30,9 +30,8 @@ function Get-TodoList {
         List all tasks from the activce user TODO list with a high priority.
 
         .EXAMPLE
-        PS C:\> Get-TodoList -Query "SELECT * FROM TodoList WHERE Priority = 'High'" -User Work
+        PS C:\> Get-TodoList -Filter Priority -eq 'High'
         List all tasks from the Work TODO list with a high priority.
-        NOTE: While the SQL query syntax is case-insensitive, search values should be enclosed in single quotes and correctly capitalized. It is highly recommended to use PowerShell's native query methods from the second example to filter results.
     #>
     [Alias("gtodo")]
     [CmdletBinding()]
@@ -40,8 +39,33 @@ function Get-TodoList {
         [Parameter(ParameterSetName = "All")]
         [switch] $All,
 
-        [Parameter(ParameterSetName = "Query", Mandatory = $true)]
-        [string] $Query,
+        [Parameter(ParameterSetName = "Filter", Mandatory = $true)]
+        [ValidateSet("Id", "Project", "Description", "Priority", "Status", "StartDate", "DueDate")]
+        [string] $Filter,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "Equal", Mandatory = $true)]
+        [string] $eq,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "NotEqual", Mandatory = $true)]
+        [string] $ne,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "GreaterThan", Mandatory = $true)]
+        [string] $gt,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "GreaterEqual", Mandatory = $true)]
+        [string] $ge,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "LessThan", Mandatory = $true)]
+        [string] $lt,
+
+        [Parameter(ParameterSetName = "Filter")]
+        [Parameter(ParameterSetName = "LessEqual", Mandatory = $true)]
+        [string] $le,
 
         [Parameter()]
         [string] $User = $env:UserName
@@ -61,7 +85,33 @@ function Get-TodoList {
     }
     process {
         $Sql = $Connection.CreateCommand()
-        $Sql.CommandText = if ($Query) { $Query } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done'" })" }
+
+        if ($eq) {
+            $Operator = "="
+            $Value = $eq
+        }
+        elseif ($ne) {
+            $Operator = "<>"
+            $Value = $ne
+        }
+        elseif ($gt) {
+            $Operator = ">"
+            $Value = $gt
+        }
+        elseif ($ge) {
+            $Operator = ">="
+            $Value = $ge
+        }
+        elseif ($lt) {
+            $Operator = "<"
+            $Value = $lt
+        }
+        elseif ($le) {
+            $Operator = "<="
+            $Value = $le
+        }
+
+        $Sql.CommandText = if ($Filter) { "SELECT * FROM TodoList WHERE ${Filter} ${Operator} '${Value}'" } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done'" })" }
         $Adapter = New-Object -TypeName "System.Data.SQLite.SQLiteDataAdapter" $Sql
         $Data = New-Object System.Data.DataSet
         [void]$Adapter.Fill($Data)
