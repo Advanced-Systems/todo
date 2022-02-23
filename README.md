@@ -16,7 +16,7 @@ Install-Module -Name Todo
 
 ## Required Modules
 
-- [`SQListe`](https://www.powershellgallery.com/packages/SQLite/2.0)
+- [`SQList`](https://www.powershellgallery.com/packages/SQLite/2.0)
 
 Review the module manifest:
 
@@ -37,6 +37,8 @@ Get-TodoList | where Priority -eq 'High' | fl
 Update-Task -Id 2 -Status Done
 Remove-Task 2
 ```
+
+For more examples, have a look at `.\exmaples\examples.ps1`.
 
 ## Remarks
 
