@@ -22,6 +22,10 @@ function Remove-TodoList {
         .EXAMPLE
         PS C:\> Remove-TodoList -User "Mazawa Shinonome"
         Remove the TODO list for a specific user.
+
+        .EXAMPLE
+        PS C:\> Get-TodoList | where Status -eq 'Discarded' | Remove-Task -WhatIf
+        Dry-run mass removal of all discarded tasks.
     #>
     [Alias("rtodo")]
     [CmdletBinding(SupportsShouldProcess)]
