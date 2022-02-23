@@ -4,7 +4,7 @@ function Update-Task {
         Update one or more properties of a specific task.
 
         .DESCRIPTION
-        Adds a new task to a TODO list by Id or Query. It is possible to manage multiple TODO lists in separate databases at once.
+        Adds a new task to a TODO list by Id. It is possible to manage multiple TODO lists in separate databases at once.
 
         .PARAMETER Id
         Defines the ID of a task that is to be updated.
