@@ -38,7 +38,7 @@ Update-Task -Id 2 -Status Done
 Remove-Task 2
 ```
 
-For more examples, have a look at `.\exmaples\examples.ps1`.
+For more examples, have a look at `.\examples\examples.ps1`.
 
 ## Remarks
 
