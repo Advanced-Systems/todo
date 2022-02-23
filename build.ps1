@@ -35,7 +35,7 @@ function Publish-Todo {
         Import-Module SQLite,PSScriptAnalyzer
 
         Write-Host "(3/${Steps}) Run PSScriptAnalyzer" -ForegroundColor Green
-        Invoke-ScriptAnalyzer -Path $ManifestPath
+        Invoke-ScriptAnalyzer -Path $ManifestPath -Recurse -Severity Warning
 
         Write-Host "(4/${Steps}) Import main module" -ForegroundColor Green
         Import-Module $ManifestPath -Force
