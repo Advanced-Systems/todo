@@ -31,7 +31,7 @@ function Remove-TodoList {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
     param(
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
 
     begin {
