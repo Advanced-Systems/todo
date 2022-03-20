@@ -111,7 +111,7 @@ function Get-TodoList {
             $Value = $le
         }
 
-        $Sql.CommandText = if ($Filter) { "SELECT * FROM TodoList WHERE ${Filter} ${Operator} '${Value}'" } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done'" })" }
+        $Sql.CommandText = if ($Filter) { "SELECT * FROM TodoList WHERE ${Filter} ${Operator} '${Value}'" } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done' AND Status != 'Discarded'" })" }
         $Adapter = New-Object -TypeName System.Data.SQLite.SQLiteDataAdapter $Sql
         $Data = New-Object System.Data.DataSet
         [void]$Adapter.Fill($Data)
