@@ -41,7 +41,7 @@ function New-Task {
     [Alias("ntask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Position = 0, Mandatory)]
         [ValidateNotNullOrEmpty()]
         [string] $Description,
 
@@ -60,13 +60,13 @@ function New-Task {
         [DateTime] $DueDate,
 
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
 
     begin {
         $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
-        $Connection = New-Object -TypeName "System.Data.SQLite.SQLiteConnection"
+        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
         $Today = Get-Date

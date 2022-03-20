@@ -1,4 +1,3 @@
-# import classes
 if (Test-Path "${PSScriptRoot}\classes\classes.psd1") {
     $ClassLoadOrder = Import-PowerShellDataFile -Path "${PSScriptRoot}\classes\classes.psd1" -ErrorAction SilentlyContinue
 }
@@ -10,8 +9,7 @@ foreach ($Class in $ClassLoadOrder.Order) {
     }
 }
 
-# dot source ps1 files
-$Public  = @( Get-ChildItem -Path "${PSScriptRoot}\public\*.ps1" -ErrorAction SilentlyContinue )
+$Public = @( Get-ChildItem -Path "${PSScriptRoot}\public\*.ps1" -ErrorAction SilentlyContinue )
 
 foreach ($Import in @($Public)) {
     try {
@@ -24,3 +22,8 @@ foreach ($Import in @($Public)) {
 }
 
 Export-ModuleMember -Function $Public.Basename -Alias *
+
+Get-ChildItem -Path "$PSScriptRoot/init" | ForEach-Object {
+    Write-Verbose "Initializing $($_.Name)"
+    . $_.FullName
+}

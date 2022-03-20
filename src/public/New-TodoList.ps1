@@ -27,14 +27,14 @@ function New-TodoList {
     [CmdletBinding()]
     param(
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
 
     begin {
         $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
         New-Item -ItemType Directory -Path $SavePath -Force | Out-Null
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
-        $Connection = New-Object -TypeName "System.Data.SQLite.SQLiteConnection"
+        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }

@@ -4,7 +4,7 @@ function Update-Task {
         Update one or more properties of a specific task.
 
         .DESCRIPTION
-        Adds a new task to a TODO list by Id or Query. It is possible to manage multiple TODO lists in separate databases at once.
+        Adds a new task to a TODO list by Id. It is possible to manage multiple TODO lists in separate databases at once.
 
         .PARAMETER Id
         Defines the ID of a task that is to be updated.
@@ -48,7 +48,7 @@ function Update-Task {
     [Alias("utask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [Parameter(Position = 0, Mandatory, ValueFromPipelineByPropertyName)]
         [int[]] $Id,
 
         [Parameter()]
@@ -69,13 +69,13 @@ function Update-Task {
         [DateTime] $DueDate,
 
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
-    
+
     begin {
         $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
-        $Connection = New-Object -TypeName "System.Data.SQLite.SQLiteConnection"
+        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }

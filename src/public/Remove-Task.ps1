@@ -4,7 +4,7 @@ function Remove-Task {
         Remove a task from a TODO list.
 
         .DESCRIPTION
-        Remove a task from a TODO list by Id or Query.
+        Remove a task from a TODO list by Id.
 
         .PARAMETER Id
         Defines the ID of a task that is to be removed.
@@ -25,27 +25,21 @@ function Remove-Task {
         .EXAMPLE
         PS C:\> Get-TodoList -All | where Status -eq 'Done' | Remove-Task -WhatIf
         Remove all tasks from the current user's TODO list that were marked as done.
-
-        .EXAMPLE
-        PS C:\> Remove-Task -Query "DELETE FROM TodoList WHERE Project = 'Confluence'" -User Work
-        Use a SQL query to remove all tasks from the work database that were originally assigned to the Confluence project.
-        NOTE: String values should be enclosed by single quotes.
-        WARNING: This operation is irreversible.
     #>
     [Alias("rtask")]
     [CmdletBinding(SupportsShouldProcess)]
     param(
-        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName)]
+        [Parameter(Position = 0, Mandatory, ValueFromPipelineByPropertyName)]
         [int[]] $Id,
 
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
 
     begin {
         $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
-        $Connection = New-Object -TypeName "System.Data.SQLite.SQLiteConnection"
+        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }

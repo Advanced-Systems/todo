@@ -39,36 +39,36 @@ function Get-TodoList {
         [Parameter(ParameterSetName = "All")]
         [switch] $All,
 
-        [Parameter(ParameterSetName = "Filter", Mandatory = $true)]
+        [Parameter(ParameterSetName = "Filter", Mandatory)]
         [ValidateSet("Id", "Project", "Description", "Priority", "Status", "StartDate", "DueDate")]
         [string] $Filter,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "Equal", Mandatory = $true)]
+        [Parameter(ParameterSetName = "Equal", Mandatory)]
         [string] $eq,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "NotEqual", Mandatory = $true)]
+        [Parameter(ParameterSetName = "NotEqual", Mandatory)]
         [string] $ne,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "GreaterThan", Mandatory = $true)]
+        [Parameter(ParameterSetName = "GreaterThan", Mandatory)]
         [string] $gt,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "GreaterEqual", Mandatory = $true)]
+        [Parameter(ParameterSetName = "GreaterEqual", Mandatory)]
         [string] $ge,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "LessThan", Mandatory = $true)]
+        [Parameter(ParameterSetName = "LessThan", Mandatory)]
         [string] $lt,
 
         [Parameter(ParameterSetName = "Filter")]
-        [Parameter(ParameterSetName = "LessEqual", Mandatory = $true)]
+        [Parameter(ParameterSetName = "LessEqual", Mandatory)]
         [string] $le,
 
         [Parameter()]
-        [string] $User = $env:UserName
+        [string] $User = $env:USERNAME
     )
 
     begin {
@@ -79,7 +79,7 @@ function Get-TodoList {
             Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
         }
 
-        $Connection = New-Object -TypeName "System.Data.SQLite.SQLiteConnection"
+        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }
@@ -106,13 +106,13 @@ function Get-TodoList {
             $Operator = "<"
             $Value = $lt
         }
-        elseif ($le) {
+        else {
             $Operator = "<="
             $Value = $le
         }
 
         $Sql.CommandText = if ($Filter) { "SELECT * FROM TodoList WHERE ${Filter} ${Operator} '${Value}'" } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done'" })" }
-        $Adapter = New-Object -TypeName "System.Data.SQLite.SQLiteDataAdapter" $Sql
+        $Adapter = New-Object -TypeName System.Data.SQLite.SQLiteDataAdapter $Sql
         $Data = New-Object System.Data.DataSet
         [void]$Adapter.Fill($Data)
         $TaskTable = $Data.Tables[0] | ForEach-Object { [Task]::new($_.Id, $_.Project, $_.Description, $_.Priority, $_.Status, $_.StartDate, $_.DueDate) }
