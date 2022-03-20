@@ -28,7 +28,7 @@ function Remove-TodoList {
         Dry-run mass removal of all discarded tasks.
     #>
     [Alias("rtodo")]
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
     param(
         [Parameter()]
         [string] $User = $env:UserName
