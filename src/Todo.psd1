@@ -8,7 +8,7 @@
 
 @{
     RootModule = "Todo.psm1"
-    ModuleVersion = "1.2.0"
+    ModuleVersion = "1.3.0"
     CompatiblePSEditions = @("Desktop")
     GUID = "1005fb56-c909-4fd8-87db-0d6d57de726c"
     Author = "Stefan Greve"
