@@ -1,5 +1,11 @@
 # Changelog
 
+## Version 1.2.0 (2022-03-20)
+
+Implement `Register-ArgumentCompleter` for all functions that offer a `User` or `Project` parameter.
+Set `ConfirmImpact` to `High` in `Remove-TodoList` to prevent the user from accidentally removing
+their TODO list.
+
 ## Version 1.1.1 (2022-02-23)
 
 Deprecate the `-Query` parameter everywhere which was previously used for directly making SQL queries
@@ -33,9 +39,9 @@ exist yet.
 
 Initial release of the `Todo` module. Implements the following Cmdlets:
 
-- `New-TodoList`
-- `Get-TodoList`
-- `Remove-TodoList`
-- `New-Task`
-- `Update-Task`
-- `Remove-Task`
+-   `New-TodoList`
+-   `Get-TodoList`
+-   `Remove-TodoList`
+-   `New-Task`
+-   `Update-Task`
+-   `Remove-Task`
