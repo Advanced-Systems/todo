@@ -106,7 +106,7 @@ function Get-TodoList {
             $Operator = "<"
             $Value = $lt
         }
-        elseif ($le) {
+        else {
             $Operator = "<="
             $Value = $le
         }
