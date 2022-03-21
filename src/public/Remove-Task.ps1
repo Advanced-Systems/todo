@@ -39,6 +39,11 @@ function Remove-Task {
     begin {
         $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
+
+        if (-not (Test-Path $DatabasePath)) {
+            Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
+        }
+
         $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
