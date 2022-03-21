@@ -32,7 +32,7 @@ function Publish-Todo {
         Test-ModuleManifest $ManifestPath
 
         Write-Host "(2/${Steps}) Import module dependencies" -ForegroundColor Green
-        Import-Module SQLite,PSScriptAnalyzer
+        Import-Module SQLite, PSScriptAnalyzer
 
         Write-Host "(3/${Steps}) Run PSScriptAnalyzer" -ForegroundColor Green
         Invoke-ScriptAnalyzer -Path $ManifestPath -Recurse -Severity Warning
@@ -49,11 +49,13 @@ function Publish-Todo {
             Publish-Module -Name $Name -NuGetApiKey $ApiKey -Verbose
         }
     }
-    end  {
-        $UriBuilder = New-Object System.UriBuilder
-        $UriBuilder.Scheme = "https"
-        $UriBuilder.Host = "www.powershellgallery.com"
-        $UriBuilder.Path = @("packages", $Name, $Version -Join "/")
-        Start-Process $UriBuilder.ToString()
+    end {
+        if ($ApiKey) {
+            $UriBuilder = New-Object System.UriBuilder
+            $UriBuilder.Scheme = "https"
+            $UriBuilder.Host = "www.powershellgallery.com"
+            $UriBuilder.Path = @("packages", $Name, $Version -Join "/")
+            Start-Process $UriBuilder.ToString()
+        }
     }
 }
