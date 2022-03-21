@@ -18,7 +18,7 @@ gtodo | where Priority -eq 'High' | sort StartDate | select Id, Description
 gtodo | where { $(Get-Date) -gt $_.DueDate -and $_.Status -ne 'Done' } | utask -Status Discarded -WhatIf
 
 # 6) Display the description of task #42
-gtask 10 | select Description
+gtask 42 | select Description
 
 # 7) Display the ID and description of all tasks
 gtodo -All | select Id, Description
