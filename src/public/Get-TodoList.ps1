@@ -1,10 +1,12 @@
+using module Todo
+
 function Get-TodoList {
     <#
         .SYNOPSIS
         List all tasks from a TODO list.
 
         .DESCRIPTION
-        List all tasks from a TODO list where status is not set to 'Done'. Supply a filter to define custom rules or pipe the output to Where-Object.
+        List all tasks from a TODO list where status is not set to 'Done' or 'Discarded'. Supply a filter to define custom rules or pipe the output to Where-Object.
 
         .PARAMETER All
         List all tasks regardless of their current status.
@@ -26,7 +28,7 @@ function Get-TodoList {
         List all tasks from the active user TODO list where status is not set to 'Done'. Use the -All switch to list all tasks regardless of their current status.
 
         .EXAMPLE
-        PS C:\> PS C:\> Get-TodoList -All | where Priority -eq 'High'
+        PS C:\> Get-TodoList -All | where Priority -eq 'High'
         List all tasks from the activce user TODO list with a high priority.
 
         .EXAMPLE
@@ -34,6 +36,7 @@ function Get-TodoList {
         List all tasks from the Work TODO list with a high priority.
     #>
     [Alias("gtodo")]
+    [OutputType([Task])]
     [CmdletBinding()]
     param(
         [Parameter(ParameterSetName = "All")]
