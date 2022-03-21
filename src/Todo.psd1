@@ -21,24 +21,24 @@
 
     FunctionsToExport = @(
         "Get-Task",
-        "New-TodoList",
         "Get-TodoList",
-        "Remove-TodoList",
         "New-Task",
-        "Update-Task",
+        "New-TodoList",
         "Remove-Task"
+        "Remove-TodoList",
+        "Update-Task"
     )
 
     CmdletsToExport = @()
     VariablesToExport = @()
     AliasesToExport = @(
         "gtask", # Get-Task
-        "ntodo", # New-TodoList
         "gtodo", # Get-TodoList
-        "rtodo", # Remove-TodoList
         "ntask", # New-Task
-        "utask", # Update-Task
-        "rtask"  # Remove-Task
+        "ntodo", # New-TodoList
+        "rtask", # Remove-Task
+        "rtodo", # Remove-TodoList
+        "utask"  # Update-Task
     )
 
     FileList = @(
@@ -46,7 +46,7 @@
         "Todo.psm1",
         "TaskTable.ps1xml",
         "classes\Task.ps1",
-        "init\RegisterArgumentCompleter.ps1",
+        "init\RegisterArgumentCompleters.ps1",
         "public\Get-Task.ps1",
         "public\Get-TodoList.ps1",
         "public\New-Task.ps1",
