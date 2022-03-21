@@ -1,6 +1,7 @@
 using namespace System.Management.Automation
 
 $CommandNames = @(
+    "Get-Task"
     "Get-TodoList"
     "New-Task"
     "New-TodoList"
@@ -12,8 +13,8 @@ $CommandNames = @(
 $RegisterUserParameter = {
     param($Command, $Parameter, $WordToComplete, $CommandAst, $FakeBoundParameters)
     $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
-    $Users = Get-ChildItem -Path $SavePath -Filter "*.db" | ForEach-Object { Write-Output $_.BaseName }
-    $Users | ForEach-Object { [CompletionResult]::new($_) }
+    $Users = Get-ChildItem -Path $SavePath -Filter "*.db"
+    $Users | ForEach-Object { [CompletionResult]::new($_.BaseName) }
 }
 
 $CommandNames | ForEach-Object { Register-ArgumentCompleter -CommandName $_ -ParameterName User -ScriptBlock $RegisterUserParameter }
