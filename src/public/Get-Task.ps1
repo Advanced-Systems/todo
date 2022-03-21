@@ -1,35 +1,38 @@
-function Remove-Task {
+using module Todo
+
+function Get-Task {
     <#
         .SYNOPSIS
-        Remove a task from a TODO list.
+        Get a task by ID.
 
         .DESCRIPTION
-        Remove a task from a TODO list by Id.
+        Get a task by ID. See also Get-TodoList.
 
         .PARAMETER Id
-        Defines the ID of a task that is to be removed.
+        Defines the ID of a task that is to be searched.
 
         .PARAMETER User
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
 
         .INPUTS
-        You can pipe Task objects to Remove-Task.
+        You can pipe IDs as integers to Get-Task.
 
         .OUTPUTS
-        None.
+        A Task object.
 
         .EXAMPLE
-        PS C:\> Remove-Task 23
-        Remove a task whose Id equals 23.
+        PS C:\> Get-Task 42 | select Description
+        Get the description of task #42.
 
         .EXAMPLE
-        PS C:\> Get-TodoList -All | where Status -eq 'Done' | Remove-Task -WhatIf
-        Remove all tasks from the current user's TODO list that were marked as done.
+        PS C:\> 1..10 | Get-Task
+        Get the first ten tasks in your TODO list. If there are currently less than ten tasks in your TODO list, return the entire TODO list instead.
     #>
-    [Alias("rtask")]
-    [CmdletBinding(SupportsShouldProcess)]
+    [Alias("gtask")]
+    [OutputType([Task])]
+    [CmdletBinding()]
     param(
-        [Parameter(Position = 0, Mandatory, ValueFromPipelineByPropertyName)]
+        [Parameter(Position = 0, Mandatory, ValueFromPipeline)]
         [int[]] $Id,
 
         [Parameter()]
@@ -51,11 +54,12 @@ function Remove-Task {
     process {
         foreach ($i in $Id) {
             $Sql = $Connection.CreateCommand()
-            $Sql.CommandText = "DELETE FROM TodoList WHERE Id = ${i}"
-
-            if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-                $Sql.ExecuteNonQuery() | Out-Null
-            }
+            $Sql.CommandText = "SELECT * FROM TodoList WHERE Id = $i"
+            $Adapter = New-Object -TypeName System.Data.SQLite.SQLiteDataAdapter $Sql
+            $Data = New-Object System.Data.DataSet
+            [void]$Adapter.Fill($Data)
+            $Task = $Data.Tables[0] | ForEach-Object { [Task]::new($_.Id, $_.Project, $_.Description, $_.Priority, $_.Status, $_.StartDate, $_.DueDate) }
+            Write-Output $Task
         }
     }
     end {

@@ -8,7 +8,7 @@
 
 @{
     RootModule = "Todo.psm1"
-    ModuleVersion = "1.2.0"
+    ModuleVersion = "1.3.0"
     CompatiblePSEditions = @("Desktop")
     GUID = "1005fb56-c909-4fd8-87db-0d6d57de726c"
     Author = "Stefan Greve"
@@ -20,23 +20,25 @@
     FormatsToProcess = @("TaskTable.ps1xml")
 
     FunctionsToExport = @(
-        "New-TodoList",
+        "Get-Task",
         "Get-TodoList",
-        "Remove-TodoList",
         "New-Task",
-        "Update-Task",
+        "New-TodoList",
         "Remove-Task"
+        "Remove-TodoList",
+        "Update-Task"
     )
 
     CmdletsToExport = @()
     VariablesToExport = @()
     AliasesToExport = @(
-        "ntodo", # New-TodoList
+        "gtask", # Get-Task
         "gtodo", # Get-TodoList
-        "rtodo", # Remove-TodoList
         "ntask", # New-Task
-        "utask", # Update-Task
-        "rtask"  # Remove-Task
+        "ntodo", # New-TodoList
+        "rtask", # Remove-Task
+        "rtodo", # Remove-TodoList
+        "utask"  # Update-Task
     )
 
     FileList = @(
@@ -44,6 +46,8 @@
         "Todo.psm1",
         "TaskTable.ps1xml",
         "classes\Task.ps1",
+        "init\RegisterArgumentCompleters.ps1",
+        "public\Get-Task.ps1",
         "public\Get-TodoList.ps1",
         "public\New-Task.ps1",
         "public\New-TodoList.ps1",

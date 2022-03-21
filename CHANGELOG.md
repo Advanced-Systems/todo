@@ -1,5 +1,27 @@
 # Changelog
 
+## Version 1.3.0 (2022-03-21)
+
+Implement a new Cmdlet to inspect single tasks more conveniently:
+
+```powershell
+# get the description of task #42
+Get-Task 42 | select Description
+
+# get the first ten tasks in your TODO list
+1..10 | Get-Task
+```
+
+Additionally, `Get-TodoList` no longer returns tasks where the status is set to `Discarded` unless
+you add the `-All` switch to the command invocation. Moreover, this function now explicitly states
+its return type which further improves the auto-completion feature in the terminal.
+
+Last but not least, the error handling has been improved in the following functions:
+
+-   `New-Task`
+-   `Remove-Task`
+-   `Update-Task`
+
 ## Version 1.2.0 (2022-03-20)
 
 Implement `Register-ArgumentCompleter` for all functions that offer a `User` or `Project` parameter.
