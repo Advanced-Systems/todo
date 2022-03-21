@@ -46,7 +46,7 @@ function Publish-Todo {
         Copy-Item $ProjectRootDirectory -Destination $Destination.FullName -Recurse -Force
 
         if ($PSCmdlet.ShouldProcess($ManifestPath, "Publish ${Name} module version ${Version} to PSGallery")) {
-            Publish-Module -Name $Name -NuGetApiKey $ApiKey -Verbose
+            Publish-Module -Name $Name -NuGetApiKey $ApiKey -RequiredVersion $Version -Verbose
         }
     }
     end {
