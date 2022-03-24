@@ -1,5 +1,3 @@
-using module Todo
-
 function Get-Task {
     <#
         .SYNOPSIS
@@ -29,7 +27,7 @@ function Get-Task {
         Get the first ten tasks in your TODO list. If there are currently less than ten tasks in your TODO list, return the entire TODO list instead.
     #>
     [Alias("gtask")]
-    [OutputType([Task])]
+    [OutputType("Task")]
     [CmdletBinding()]
     param(
         [Parameter(Position = 0, Mandatory, ValueFromPipeline)]
