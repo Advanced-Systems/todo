@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.3.1 (2022-03-24)
+
+Small bug fixes for the custom formatting rules and type output declarations.
+
 ## Version 1.3.0 (2022-03-21)
 
 Implement a new Cmdlet to inspect single tasks more conveniently:
