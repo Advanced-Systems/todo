@@ -34,7 +34,7 @@ function Get-TodoList {
         List all tasks from the Work TODO list with a high priority.
     #>
     [Alias("gtodo")]
-    [OutputType([Task])]
+    [OutputType("Task")]
     [CmdletBinding()]
     param(
         [Parameter(ParameterSetName = "All")]
