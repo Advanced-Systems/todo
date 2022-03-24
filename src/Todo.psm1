@@ -10,8 +10,9 @@ foreach ($Class in $ClassLoadOrder.Order) {
 }
 
 $Public = @( Get-ChildItem -Path "${PSScriptRoot}\public\*.ps1" -ErrorAction SilentlyContinue )
+$Private = @( Get-ChildItem -Path "${PSScriptRoot}\private\*.ps1" -ErrorAction SilentlyContinue )
 
-foreach ($Import in @($Public)) {
+foreach ($Import in @($Public + $Private)) {
     try {
         Write-Verbose "Importing $($Import.FullName)"
         . $Import.FullName
