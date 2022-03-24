@@ -8,7 +8,7 @@
 
 @{
     RootModule = "Todo.psm1"
-    ModuleVersion = "1.3.0"
+    ModuleVersion = "1.3.1"
     CompatiblePSEditions = @("Desktop")
     GUID = "1005fb56-c909-4fd8-87db-0d6d57de726c"
     Author = "Stefan Greve"
@@ -17,7 +17,7 @@
     Description = "PowerShell Module to manage your TODO list from the terminal."
     PowerShellVersion = "5.1"
     RequiredModules = @("SQLite")
-    FormatsToProcess = @("TaskTable.ps1xml")
+    FormatsToProcess = @("TodoTable.Format.ps1xml")
 
     FunctionsToExport = @(
         "Get-Task",
@@ -44,7 +44,7 @@
     FileList = @(
         "Todo.psd1",
         "Todo.psm1",
-        "TaskTable.ps1xml",
+        "TodoTable.Format.ps1xml",
         "classes\Task.ps1",
         "init\RegisterArgumentCompleters.ps1",
         "public\Get-Task.ps1",

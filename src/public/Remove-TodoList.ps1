@@ -35,8 +35,7 @@ function Remove-TodoList {
     )
 
     begin {
-        $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
-        $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
+        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
     }
     process {
         if (Test-Path $DatabasePath -IsValid) {
