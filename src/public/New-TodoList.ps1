@@ -31,7 +31,7 @@ function New-TodoList {
     )
 
     begin {
-        $SavePath = Join-Path -Path $([Environment]::GetFolderPath("ApplicationData")) -ChildPath "Todo"
+        $SavePath = Get-SavePath
         New-Item -ItemType Directory -Path $SavePath -Force | Out-Null
         $DatabasePath = Join-Path -Path $SavePath -ChildPath "${User}.db"
         $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
