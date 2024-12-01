@@ -21,7 +21,7 @@ Install-Module -Name Todo
 
 ## Required Modules
 
-- [`SQList`](https://www.powershellgallery.com/packages/SQLite/2.0)
+- [`SQLite`](https://www.powershellgallery.com/packages/SQLite/2.0)
 
 ## Basic Usage
 
