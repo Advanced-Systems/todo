@@ -1,3 +1,7 @@
+using namespace System
+using namespace System.Data.SQLite
+using namespace System.IO
+
 function Remove-Task {
     <#
         .SYNOPSIS
@@ -33,17 +37,18 @@ function Remove-Task {
         [int[]] $Id,
 
         [Parameter()]
-        [string] $User = $env:USERNAME
+        [string] $User = [Environment]::UserName
     )
 
     begin {
-        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
+        $SavePath = Get-SavePath
+        $DatabasePath = [Path]::Combine($SavePath, "${User}.db")
 
-        if (-not (Test-Path $DatabasePath)) {
-            Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
+        if (!(Test-Path $DatabasePath)) {
+            Write-Error $DatabaseDoesNotExistErrorMessage -Category ObjectNotFound -ErrorAction Stop
         }
 
-        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
+        $Connection = [SQLiteConnection]::new()
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }
@@ -53,12 +58,17 @@ function Remove-Task {
             $Sql.CommandText = "DELETE FROM TodoList WHERE Id = ${i}"
 
             if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-                $Sql.ExecuteNonQuery() | Out-Null
+                try {
+                    $Sql.ExecuteNonQuery() | Out-Null
+                } catch {
+                    Write-Error $DatabaseConnectionErrorMessage -Category ConnectionError -ErrorAction Stop
+                } finally {
+                    $Sql.Dispose()
+                }
             }
         }
     }
-    end {
+    clean {
         $Connection.Close()
-        $Sql.Dispose()
     }
 }

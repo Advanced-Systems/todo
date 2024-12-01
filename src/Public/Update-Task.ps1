@@ -1,10 +1,16 @@
+using namespace System
+using namespace System.Collections.Generic
+using namespace System.Data.SQLite
+using namespace System.IO
+
 function Update-Task {
     <#
         .SYNOPSIS
         Update one or more properties of a specific task.
 
         .DESCRIPTION
-        Adds a new task to a TODO list by Id. It is possible to manage multiple TODO lists in separate databases at once.
+        Adds a new task to a TODO list by Id. It is possible to manage multiple
+        TODO lists in separate databases at once.
 
         .PARAMETER Id
         Defines the ID of a task that is to be updated.
@@ -25,7 +31,9 @@ function Update-Task {
         Sets the current status to this task.
 
         .PARAMETER User
-        Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
+        Each TODO list is associated to a user account. The default user account
+        is read from the username environment variable. Specify a value for this
+        parameter to access an another TODO list from a different user.
 
         .INPUTS
         You can pipe Task objects to Update-Task.
@@ -39,10 +47,11 @@ function Update-Task {
 
         .EXAMPLE
         PS C:\> Update-Task -Id 42 -Priority High -Status InProgress
-        Update the priority of task 42 to high and change its current status to in-progress.
+        Update the priority of task 42 to high and change its current status to
+        in-progress.
 
         .EXAMPLE
-        PS C:\> Get-TodoList | where { $(Get-Date) -gt $_.DueDate -and $_.Status -ne 'Done' } | Update-Task -Status Discarded
+        PS C:\> Get-TodoList | ? { $(Get-Date) -gt $_.DueDate -and $_.Status -ne 'Done' } | Update-Task -Status Discarded
         Search all overdue task records that were never completed and update their status to discarded
     #>
     [Alias("utask")]
@@ -69,52 +78,58 @@ function Update-Task {
         [DateTime] $DueDate,
 
         [Parameter()]
-        [string] $User = $env:USERNAME
+        [string] $User = [Environment]::UserName
     )
 
     begin {
-        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
+        $SavePath = Get-SavePath
+        $DatabasePath = [Path]::Combine($SavePath, "${User}.db")
 
-        if (-not (Test-Path $DatabasePath)) {
-            Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
+        if (!(Test-Path $DatabasePath)) {
+            Write-Error $DatabaseDoesNotExistErrorMessage -Category ObjectNotFound -ErrorAction Stop
         }
 
-        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
+        $Connection = [SQLiteConnection]::new()
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }
     process {
         foreach ($i in $Id) {
             $Sql = $Connection.CreateCommand()
-            $QueryBuilder = New-Object System.Collections.Generic.List[string]
+            $QueryBuilder = [List[string]]::new()
             $QueryBuilder.Add("UPDATE TodoList SET ")
 
             if ($Project) {
-                $QueryBuilder.Add("Project = '${Project}'$(if ($Description -or $Priority -or $Status -or $DueDate) {','} else {''})")
+                $QueryBuilder.Add("Project='${Project}'$(($Description -or $Priority -or $Status -or $DueDate) ? "," : [string]::Empty)")
             }
             if ($Description) {
-                $QueryBuilder.Add("Description = '${Description}'$(if ($Priority -or $Status -or $DueDate) {','} else {''})")
+                $QueryBuilder.Add("Description='${Description}'$(($Priority -or $Status -or $DueDate) ? "," : [string]::Empty)")
             }
             if ($Priority) {
-                $QueryBuilder.Add("Priority = '${Priority}'$(if ($Status -or $DueDate) {','} else {''})")
+                $QueryBuilder.Add("Priority='${Priority}'$(($Status -or $DueDate)? "," : [string]::Empty)")
             }
             if ($Status) {
-                $QueryBuilder.Add("Status = '${Status}'$(if ($DueDate) {','} else {''})")
+                $QueryBuilder.Add("Status='${Status}'$(($DueDate) ? "," : [string]::Empty)")
             }
             if ($DueDate) {
-                $QueryBuilder.Add("DueDate = '$($DueDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff"))'")
+                $QueryBuilder.Add("DueDate='$($DueDate.ToString("yyyy-MM-dd HH:mm:ss.fffffff"))'")
             }
 
             $QueryBuilder.Add(" WHERE Id=${i}")
             $Sql.CommandText = $QueryBuilder -Join ''
 
             if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-                $Sql.ExecuteNonQuery() | Out-Null
+                try {
+                    $Sql.ExecuteNonQuery() | Out-Null
+                } catch {
+                    Write-Error $DatabaseConnectionErrorMessage -Category ConnectionError -ErrorAction Stop
+                } finally {
+                    $Sql.Dispose()
+                }
             }
         }
     }
-    end {
+    clean {
         $Connection.Close()
-        $Sql.Dispose()
     }
 }

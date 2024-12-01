@@ -1,3 +1,6 @@
+using namespace System
+using namespace System.IO
+
 function Remove-TodoList {
     <#
         .SYNOPSIS
@@ -7,7 +10,9 @@ function Remove-TodoList {
         Deletes a TODO list database.
 
         .PARAMETER User
-        Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
+        Each TODO list is associated to a user account. The default user account
+        is read from the username environment variable. Specify a value for this
+        parameter to access an another TODO list from a different user.
 
         .INPUTS
         None. You cannot pipe objects to Remove-TodoList.
@@ -20,7 +25,7 @@ function Remove-TodoList {
         Remove the default TODO list.
 
         .EXAMPLE
-        PS C:\> Remove-TodoList -User "Mazawa Shinonome"
+        PS C:\> Remove-TodoList -User "Stefan Greve"
         Remove the TODO list for a specific user.
 
         .EXAMPLE
@@ -31,21 +36,21 @@ function Remove-TodoList {
     [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
     param(
         [Parameter()]
-        [string] $User = $env:USERNAME
+        [string] $User = [Environment]::UserName
     )
 
     begin {
-        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
+        $SavePath = Get-SavePath
+        $DatabasePath = [Path]::Combine($SavePath, "${User}.db")
+
+        if (!(Test-Path $DatabasePath)) {
+            Write-Error $DatabaseDoesNotExistErrorMessage -Category ObjectNotFound -ErrorAction Stop
+        }
     }
     process {
-        if (Test-Path $DatabasePath -IsValid) {
-            if ($PSCmdlet.ShouldProcess($DatabasePath)) {
-                Remove-Item $DatabasePath
-            }
-        }
-        else {
-            Write-Error -Category ObjectNotFound -ErrorAction Stop
+        if ($PSCmdlet.ShouldProcess($DatabasePath)) {
+            Remove-Item $DatabasePath
         }
     }
-    end {}
+    clean {}
 }

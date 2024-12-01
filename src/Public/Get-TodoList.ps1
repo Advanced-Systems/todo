@@ -1,16 +1,23 @@
+using namespace System
+using namespace System.Data
+using namespace System.Data.SQLite
+using namespace System.IO
+
 function Get-TodoList {
     <#
         .SYNOPSIS
         List all tasks from a TODO list.
 
         .DESCRIPTION
-        List all tasks from a TODO list where status is not set to 'Done' or 'Discarded'. Supply a filter to define custom rules or pipe the output to Where-Object.
+        List all tasks from a TODO list where status is not set to 'Done' or 'Discarded'.
+        Supply a filter to define custom rules or pipe the output to Where-Object.
 
         .PARAMETER All
         List all tasks regardless of their current status.
 
         .PARAMETER Filter
-        Use the filter in combination with a comparison operator to apply simple filters on this list.
+        Use the filter in combination with a comparison operator to apply simple
+        filters on this list.
 
         .PARAMETER User
         Each TODO list is accociated to a user account. The default user account is read from the username environment variable. Specify a value for this parameter to access an another TODO list from a different user.
@@ -23,7 +30,9 @@ function Get-TodoList {
 
         .EXAMPLE
         PS C:\> Get-TodoList
-        List all tasks from the active user TODO list where status is not set to 'Done'. Use the -All switch to list all tasks regardless of their current status.
+        List all tasks from the active user TODO list where status is not set to
+        'Done'. Use the -All switch to list all tasks regardless of their current
+        status.
 
         .EXAMPLE
         PS C:\> Get-TodoList -All | where Priority -eq 'High'
@@ -69,17 +78,18 @@ function Get-TodoList {
         [string] $le,
 
         [Parameter()]
-        [string] $User = $env:USERNAME
+        [string] $User = [Environment]::UserName
     )
 
     begin {
-        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
+        $SavePath = Get-SavePath
+        $DatabasePath = [Path]::Combine($SavePath, "${User}.db")
 
-        if (-not (Test-Path $DatabasePath)) {
-            Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
+        if (!(Test-Path $DatabasePath)) {
+            Write-Error $DatabaseDoesNotExistErrorMessage -Category ObjectNotFound -ErrorAction Stop
         }
 
-        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
+        $Connection = [SQLiteConnection]::new()
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
     }
@@ -111,15 +121,37 @@ function Get-TodoList {
             $Value = $le
         }
 
-        $Sql.CommandText = if ($Filter) { "SELECT * FROM TodoList WHERE ${Filter} ${Operator} '${Value}'" } else { "SELECT * FROM TodoList $(if ($All) { '' } else { "WHERE Status != 'Done' AND Status != 'Discarded'" })" }
-        $Adapter = New-Object -TypeName System.Data.SQLite.SQLiteDataAdapter $Sql
-        $Data = New-Object System.Data.DataSet
-        [void]$Adapter.Fill($Data)
-        $TaskTable = $Data.Tables[0] | ForEach-Object { [Task]::new($_.Id, $_.Project, $_.Description, $_.Priority, $_.Status, $_.StartDate, $_.DueDate) }
-        Write-Output $TaskTable
+        $Sql.CommandText = if ($Filter) {
+            "SELECT * FROM TodoList WHERE ${Filter} ${Operator} `"${Value}`""
+        } else {
+            "SELECT * FROM TodoList $($All.IsPresent ? [string]::Empty : "WHERE Status != 'Done' AND Status != 'Discarded'" )"
+        }
+
+        try {
+            $Adapter = [SQLiteDataAdapter]::new($Sql)
+            $Data = [DataSet]::new()
+            [void] $Adapter.Fill($Data)
+
+            $TaskTable = $Data.Tables[0] | ForEach-Object {
+                [Task]::new(
+                    $_.Id,
+                    $_.Project,
+                    $_.Description,
+                    $_.Priority,
+                    $_.Status,
+                    $_.StartDate,
+                    $_.DueDate
+                )
+            }
+
+            Write-Output $TaskTable
+        } catch {
+            Write-Error $DatabaseConnectionErrorMessage -Category ConnectionError -ErrorAction Stop
+        } finally {
+            $Sql.Dispose()
+        }
     }
-    end {
+    clean {
         $Connection.Close()
-        $Sql.Dispose()
     }
 }

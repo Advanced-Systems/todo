@@ -1,10 +1,15 @@
+using namespace System
+using namespace System.Data.SQLite
+using namespace System.IO
+
 function New-Task {
     <#
         .SYNOPSIS
         Adds a new task to a TODO list.
 
         .DESCRIPTION
-        Adds a new task to a TODO list. It is possible to manage multiple TODO lists in separate databases at once.
+        Adds a new task to a TODO list. It is possible to manage multiple TODO
+        lists in separate databases at once.
 
         .PARAMETER Description
         Sets the description of this task.
@@ -32,7 +37,9 @@ function New-Task {
 
         .EXAMPLE
         PS C:\> New-Task "Update VM"
-        Add a new item to the current user's TODO list. Description is the only required parameter in this Cmdlet, all other properties will be automatically populated with their respective default values.
+        Add a new item to the current user's TODO list. Description is the only
+        required parameter in this Cmdlet, all other properties will be automatically
+        populated with their respective default values.
 
         .EXAMPLE
         PS C:\> New-Task -Description "Review PR #186" -Project "Backend" -Priority Medium
@@ -60,38 +67,49 @@ function New-Task {
         [DateTime] $DueDate,
 
         [Parameter()]
-        [string] $User = $env:USERNAME
+        [string] $User = [Environment]::UserName
     )
 
     begin {
-        $DatabasePath = Join-Path -Path $(Get-SavePath) -ChildPath "${User}.db"
+        $SavePath = Get-SavePath
+        $DatabasePath = [Path]::Combine($SavePath, "${User}.db")
 
-        if (-not (Test-Path $DatabasePath)) {
-            Write-Error -Message "This TODO list does not exist. You can create one with the command 'New-TodoList -User ${User}'" -Category ObjectNotFound -ErrorAction Stop
+        if (!(Test-Path $DatabasePath)) {
+            Write-Error $DatabaseDoesNotExistErrorMessage -Category ObjectNotFound -ErrorAction Stop
         }
 
-        $Connection = New-Object -TypeName System.Data.SQLite.SQLiteConnection
+        $Connection = [SQLiteConnection]::new()
         $Connection.ConnectionString = "DATA SOURCE=${DatabasePath}"
         $Connection.Open()
-        $Today = Get-Date
+
+        $Today = [DateTime]::Now
     }
     process {
         $Sql = $Connection.CreateCommand()
-        $Param1 = $Sql.Parameters.AddWithValue("@Id", $null)
-        $Param2 = $Sql.Parameters.AddWithValue("@Project", $Project)
-        $Param3 = $Sql.Parameters.AddWithValue("@Description", $Description)
-        $Param4 = $Sql.Parameters.AddWithValue("@Priority", $Priority)
-        $Param5 = $Sql.Parameters.AddWithValue("@Status", $Status)
-        $Param6 = $Sql.Parameters.AddWithValue("@StartDate", $Today)
-        $Param7 = $Sql.Parameters.AddWithValue("@DueDate", $(if ($DueDate) { $DueDate } else { [DateTime]::new($Today.Year, 12, 31) }))
+
+        $null = & {
+            $Sql.Parameters.AddWithValue("@Id", $null)
+            $Sql.Parameters.AddWithValue("@Project", $Project)
+            $Sql.Parameters.AddWithValue("@Description", $Description)
+            $Sql.Parameters.AddWithValue("@Priority", $Priority)
+            $Sql.Parameters.AddWithValue("@Status", $Status)
+            $Sql.Parameters.AddWithValue("@StartDate", $Today)
+            $Sql.Parameters.AddWithValue("@DueDate", $($DueDate ? $DueDate : [DateTime]::new($Today.Year, 12, 31)))
+        }
+
         $Sql.CommandText = "INSERT INTO TodoList (Id,Project,Description,Priority,Status,StartDate,DueDate) VALUES (@Id,@Project,@Description,@Priority,@Status,@StartDate,@DueDate)"
 
         if ($PSCmdlet.ShouldProcess($Sql.CommandText)) {
-            $Sql.ExecuteNonQuery() | Out-Null
+            try {
+                $Sql.ExecuteNonQuery() | Out-Null
+            } catch {
+                Write-Error $DatabaseConnectionErrorMessage -Category ConnectionError -ErrorAction Stop
+            } finally {
+                $Sql.Dispose()
+            }
         }
     }
-    end {
+    clean {
         $Connection.Close()
-        $Sql.Dispose()
     }
 }
