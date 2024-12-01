@@ -1,10 +1,15 @@
 <p align="center">
   <a title="Project Logo">
-    <img height="150" style="margin-top:15px" src="https://raw.githubusercontent.com/Advanced-Systems/vector-assets/master/advanced-systems-logo-annotated.svg">
+    <img height="150" style="margin-top:15px" src="https://raw.githubusercontent.com/Advanced-Systems/assets/master/logos/svg/min/adv-logo.svg">
   </a>
 </p>
 
 <h1 align="center">Advanced Systems Todo List</h1>
+
+![](https://img.shields.io/badge/PowerShell_Version-7.4-blue)
+![GitHub License](https://img.shields.io/github/license/advanced-systems/todo)
+
+## About
 
 `Todo` is an open-source PowerShell module to manage your TODO list from the terminal. All tasks are locally stored
 in a SQLite database located in a app data sub-directory. This module can be installed from [PowerShell Gallery](https://www.powershellgallery.com/)
@@ -17,13 +22,6 @@ Install-Module -Name Todo
 ## Required Modules
 
 - [`SQList`](https://www.powershellgallery.com/packages/SQLite/2.0)
-
-Review the module manifest:
-
-```powershell
-Invoke-WebRequest -Uri https://raw.githubusercontent.com/Advanced-Systems/todo/master/src/Todo.psd1 -OutFile Todo.psd1
-Import-PowerShellDataFile Todo.psd1 | Write-Output
-```
 
 ## Basic Usage
 

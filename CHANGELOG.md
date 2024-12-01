@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 2.0.0 (2024-12-01)
+
+TODO
+
 ## Version 1.3.2 (2022-03-24)
 
 Declare `OutputType` as strings to fix a bug which breaks `Get-Task` and `Get-TodoList`:
