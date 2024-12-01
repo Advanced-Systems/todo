@@ -1,5 +1,3 @@
-using namespace System.IO
-
 [CmdletBinding(SupportsShouldProcess, ConfirmImpact = "High")]
 param(
     [string] $ModuleName = "Todo",
@@ -13,9 +11,8 @@ param(
 
 begin {
     $ManifestPath = "${ModuleName}.psd1"
+    $ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 
-    $ScriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Path
-    $ProjectRoot = $(Get-Item $([Path]::Combine($ScriptPath, ".."))).FullName
     Push-Location $ProjectRoot
 }
 process {

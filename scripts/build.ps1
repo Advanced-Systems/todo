@@ -8,12 +8,12 @@ param(
 )
 
 begin {
-    $ScriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Path
-    $ProjectRoot = $(Get-Item $([Path]::Combine($ScriptPath, ".."))).FullName
-    Push-Location $([Path]::Combine($ProjectRoot, "src"))
+    $ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 
     $Steps = 5
     $ManifestPath = "${ModuleName}.psd1"
+
+    Push-Location $([Path]::Combine($ProjectRoot, "src"))
 }
 process {
     #region Step 1 - Install Dependencies

@@ -7,8 +7,7 @@ param(
 )
 
 begin {
-    $ScriptPath = Split-Path -Parent -Path $MyInvocation.MyCommand.Path
-    $ProjectRoot = $(Get-Item $([Path]::Combine($ScriptPath, ".."))).FullName
+    $ProjectRoot = Split-Path -Path $PSScriptRoot -Parent
 }
 process {
     if (!$(Get-Module SQLite -ListAvailable)) {
